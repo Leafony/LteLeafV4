@@ -31,7 +31,7 @@ NetworkStatus LpwaV4Gprs::attachGprs(const char *apn, const char *username,
 
   // disconnect PDN
   bool statCmd = theMurataLpwaCore.sendf("AT%%PDNACT=%d,1\r", 0);
-  int a = theMurataLpwaCore.waitForResponse("OK\r");
+  int a = theMurataLpwaCore.waitForResponse("OK\r",NULL,0,3000,true);
   statCmd = theMurataLpwaCore.sendCmd("at%PDNACT?\r");
   a = theMurataLpwaCore.waitForResponse("OK\r");
   
@@ -63,6 +63,12 @@ NetworkStatus LpwaV4Gprs::attachGprs(const char *apn, const char *username,
   // PDP connect
   int cntWait = 10;
   while (theMurataLpwaCore.getPdpStat() == 0) {
+    cntWait--;
+    if (cntWait < 1) {
+      Serial.println("@@@@@ LpwaV4Gprs::attachGprs() PDN timeout");
+      return theMurataLpwaCore.status = LPWA_FAIL;
+    }
+
     if (!theMurataLpwaCore.sendf("AT%%PDNACT=%d,1,%s\r", 1, apn))
       return theMurataLpwaCore.status = LPWA_FAIL;
     if (theMurataLpwaCore.waitForResponse("OK\r") < 0) {
@@ -78,11 +84,6 @@ NetworkStatus LpwaV4Gprs::attachGprs(const char *apn, const char *username,
       continue;
     }
 
-    cntWait--;
-    if (cntWait < 1) {
-      Serial.println("@@@@@ LpwaV4Gprs::attachGprs() PDN timeout");
-      return theMurataLpwaCore.status = LPWA_FAIL;
-    }
     delay(1000);
   }
 
