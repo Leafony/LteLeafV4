@@ -3,6 +3,7 @@
  * LTE-M Leaf V4 library
  * LTE-Mリーフボード定義ファイル
  *
+ * 2022.5.31 update PVT pin-assign kt-nakamura@kddi-tech.com
  * 2021.12.28 kt-nakamura@kddi-tech.com
  */
 #ifndef LPWA_V4_BOARD_H_

@@ -29,9 +29,10 @@ class MurataLpwaCore {
   PinName _tx;
   HardwareSerial &_serial;
   const unsigned long _baud;
-  char *_buffer;
-  int _buffer_p;
+//  char *_buffer;
+//  int _buffer_p;
   bool _power;
+  bool _init;
 
 public:
   MurataLpwaCore(HardwareSerial &serial, const unsigned long baud);

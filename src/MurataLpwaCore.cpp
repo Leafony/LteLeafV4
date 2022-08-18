@@ -44,7 +44,7 @@ bool readTca6408(uint8_t *data, uint8_t reg) {
 
 
 MurataLpwaCore::MurataLpwaCore(HardwareSerial &serial, const unsigned long baud)
-    : _serial(serial), _baud(baud), status(IDLE), _power(false) {}
+    : _serial(serial), _baud(baud), status(IDLE), _power(false), _init(false) {}
 
 MurataLpwaCore::~MurataLpwaCore() { }
 
@@ -234,8 +234,8 @@ NetworkStatus MurataLpwaCore::begin() {
   rcv_length = 0;
   pdp_stat = 0;
   socket_event = 0;
-  _buffer = 0;
-  _buffer_p = 0;
+//  _buffer = 0;
+//  _buffer_p = 0;
   http_resp = 0;
 
   // GPIO初期化
@@ -243,10 +243,14 @@ NetworkStatus MurataLpwaCore::begin() {
   digitalWrite(MDM_USART_CTS, LOW);
   pinMode(MDM_USART_RTS, INPUT);
 
-  // I2C初期化
-  Wire.setSDA(I2C2_SDA);
-  Wire.setSCL(I2C2_SCL);
-  Wire.begin();
+  if (!_init) {
+    Serial.println("@@@@@ MurataLpwaCore::begin() init 1st time");
+    // I2C初期化
+    Wire.setSDA(I2C2_SDA);
+    Wire.setSCL(I2C2_SCL);
+    Wire.begin();
+    _init = true;
+  }
 
   // UART初期化
   _serial.begin(_baud);
@@ -259,7 +263,7 @@ NetworkStatus MurataLpwaCore::begin() {
   int remainChk = 10;
   while (remainChk > 0) {
     sendCmd("AT\r");
-    if (waitForResponse("OK\r") == 0) {
+    if (waitForResponse("OK\r",NULL,0,1000,true) == 0) {
       remainChk = 0;
     } else {
       remainChk--;
@@ -299,9 +303,11 @@ NetworkStatus MurataLpwaCore::begin() {
  */
 void MurataLpwaCore::end() {
 //  Serial.println("@@@@@ MurataLpwaCore::end()");
-  if(_buffer != 0) {
-    delete[] _buffer;
-  }
+//  if(_buffer != 0) {
+//    delete[] _buffer;
+//  }
+//  Wire.end();
+  _serial.end();
 
   // モデム電源オフ
   power(false);
@@ -309,6 +315,7 @@ void MurataLpwaCore::end() {
   // GPIO,UART無効化
   digitalWrite(MDM_USART_CTS, LOW);
   digitalWrite(MDM_USART_TXD, LOW);
+
 
   status = LPWA_OFF;
 }
@@ -510,7 +517,7 @@ int MurataLpwaCore::poll(const char *expectedVal) {
         // エラー応答チェック１
         pdest = strstr(mdm_rxbuff, "ERROR\r");
         if (pdest != NULL) {
-          _buffer = "ERROR";
+//          _buffer = "ERROR";
           mdm_rxbuff_p = 0;
           mdm_rxfind_p = 0;
 #ifdef COMMAND_DBG

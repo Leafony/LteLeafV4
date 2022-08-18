@@ -91,7 +91,7 @@ void LpwaV4Ctrl::powerDown(int state) {
 }
 
 int readAdc101C027() {
-  Wire.endTransmission();
+//  Wire.endTransmission();
   uint8_t timeout=0;
   int data = 0;
   Wire.requestFrom(ADC101C027_ADR, (uint8_t) 0x02);
