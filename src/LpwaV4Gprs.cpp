@@ -36,7 +36,7 @@ NetworkStatus LpwaV4Gprs::attachGprs(const char *apn, const char *username,
   a = theMurataLpwaCore.waitForResponse("OK\r");
   
   // LTE Band 18(800MHz) only
-  if (!theMurataLpwaCore.sendCmd("AT%SETCFG=\"BAND\",\"18\"\r"))
+  if (!theMurataLpwaCore.sendCmd("AT%SETCFG=\"BAND\",\"18,19\"\r"))
     return theMurataLpwaCore.status = LPWA_FAIL;
   if (theMurataLpwaCore.waitForResponse("OK\r",NULL,0,1000) < 0)
     return theMurataLpwaCore.status = LPWA_FAIL;
