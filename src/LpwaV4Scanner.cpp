@@ -10,15 +10,16 @@
  * 現在のネットワークキャリアの名前を取得して返します。
  * @return 現在のネットワークキャリアの名前
  */
-String LpwaV4Scanner::getCurrentCarrier() {
+String LpwaV4Scanner::getCurrentCarrier()
+{
   char rcvbuff[100];
   char *start_p = NULL;
   char *end_p = NULL;
 
   theMurataLpwaCore.sendCmd("AT+COPS?\r");
-  if (theMurataLpwaCore.waitForResponse("OK\r",rcvbuff,100) < 0)
+  if (theMurataLpwaCore.waitForResponse("OK\r", rcvbuff, 100) < 0)
     return "";
-  
+
   // NOTE: AT+COPS? の応答は `+COPS: <mode>[,<format>,<oper>[,<AcT>]]` 形式
   // NONE: oper のみ文字列で "" で囲まれる
   start_p = strstr(rcvbuff, "+COPS:");
@@ -41,13 +42,14 @@ String LpwaV4Scanner::getCurrentCarrier() {
  * @return 0-31スケールの信号強度。31 は信号強度 > -51 dBmを意味します。
  * 99は検出不可を意味します。
  */
-String LpwaV4Scanner::getSignalStrength() {
+String LpwaV4Scanner::getSignalStrength()
+{
   char rcvbuff[100];
   char *start_p = NULL;
   char *end_p = NULL;
 
   theMurataLpwaCore.sendCmd("AT+CSQ\r");
-  if (theMurataLpwaCore.waitForResponse("OK\r",rcvbuff,100) < 0)
+  if (theMurataLpwaCore.waitForResponse("OK\r", rcvbuff, 100) < 0)
     return "";
 
   // NOTE: AT+CSQ の応答は `+CSQ: <rssi>,<ber>` 形式

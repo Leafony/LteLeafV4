@@ -13,16 +13,19 @@
 /**
  * LPWAライブラリのベースとなるクラス
  */
-class LpwaV4Access {
+class LpwaV4Access
+{
 public:
   /** 電源をオンにする */
-  NetworkStatus begin() {
+  NetworkStatus begin()
+  {
     return theMurataLpwaCore.begin();
-//    return LPWA_FAIL;
+    //    return LPWA_FAIL;
   }
   /** 電源をオフにする */
-  void end() {
-//    return theMurataLpwaCore.end();
+  void end()
+  {
+    //    return theMurataLpwaCore.end();
     return;
   }
   /** 電源をオフにする */

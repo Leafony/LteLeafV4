@@ -6,12 +6,14 @@
  */
 #include "LpwaV4Pin.h"
 
-int LpwaV4Pin::isPin() {
+int LpwaV4Pin::isPin()
+{
   char rcvbuff[100];
   char *find_p;
   if (!theMurataLpwaCore.sendCmd("AT+CPIN?\r"))
     return -1;
-  if (theMurataLpwaCore.waitForResponse("OK\r",rcvbuff,100) < 0) {
+  if (theMurataLpwaCore.waitForResponse("OK\r", rcvbuff, 100) < 0)
+  {
     return -3;
   }
 
@@ -22,7 +24,7 @@ int LpwaV4Pin::isPin() {
 
   find_p = strstr(rcvbuff, " SIM PIN\r");
   if (find_p != NULL)
-    return 1;  
+    return 1;
 
   return -1;
 }

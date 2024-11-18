@@ -13,7 +13,8 @@
 /**
  * SIM PINコードの診断機能のためのクラス
  */
-class LpwaV4Pin {
+class LpwaV4Pin
+{
 public:
   /** 電源をオンにする */
   NetworkStatus begin() { return theMurataLpwaCore.begin(); }
