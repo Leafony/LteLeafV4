@@ -13,14 +13,15 @@
 #include "typesV4.h"
 #include <Wire.h>
 
-#define LPWA_OFF     0
-#define LPWA_NORMAL  1
-#define LPWA_RESET   2
-#define LPWA_SLEEP1  3 // DEEP HIBERNATE1
-#define LPWA_SLEEP2  4 // DEEP HIBERNATE1
-#define LPWA_SLEEP3  5 // DEEP SLEEP
+#define LPWA_OFF 0
+#define LPWA_NORMAL 1
+#define LPWA_RESET 2
+#define LPWA_SLEEP1 3 // DEEP HIBERNATE1
+#define LPWA_SLEEP2 4 // DEEP HIBERNATE1
+#define LPWA_SLEEP3 5 // DEEP SLEEP
 
-class LpwaV4Ctrl {
+class LpwaV4Ctrl
+{
   int pwrState;
 
 public:

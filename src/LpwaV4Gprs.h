@@ -14,7 +14,8 @@
 /**
  * GPRS接続のためのクラス
  */
-class LpwaV4Gprs {
+class LpwaV4Gprs
+{
   bool _ready();
 
 public:
@@ -22,7 +23,8 @@ public:
                            const char *password, unsigned long timeout = 30000);
   NetworkStatus attachGPRS(const char *apn, const char *username,
                            const char *password,
-                           unsigned long timeout = 30000) {
+                           unsigned long timeout = 30000)
+  {
     return attachGprs(apn, username, password, timeout);
   }
   NetworkStatus dettachGprs();

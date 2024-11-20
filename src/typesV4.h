@@ -10,7 +10,8 @@
 /**
  * モデムとネットワークの状態
  */
-enum NetworkStatus {
+enum NetworkStatus
+{
   /** 内部エラー */
   LPWA_FAIL,
   /** 初期状態 */

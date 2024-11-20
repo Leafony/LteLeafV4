@@ -13,7 +13,8 @@
 /**
  * ネットワークの診断機能のためのクラス
  */
-class LpwaV4Scanner {
+class LpwaV4Scanner
+{
 public:
   /** 電源をオンにする */
   NetworkStatus begin() { return theMurataLpwaCore.begin(); }
@@ -26,4 +27,4 @@ public:
   String getSignalStrength();
 };
 
-#endif //LPWA_V4_SCANNER_H_
+#endif // LPWA_V4_SCANNER_H_

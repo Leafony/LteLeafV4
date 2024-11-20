@@ -14,7 +14,8 @@
 /**
  * モデムの診断機能ためのクラス
  */
-class LpwaV4Modem {
+class LpwaV4Modem
+{
 public:
   /** 電源をオンにする */
   NetworkStatus begin() { return theMurataLpwaCore.begin(); }

@@ -18,7 +18,8 @@
 /**
  * UDPソケット通信のためのクラス
  */
-class LpwaV4Udp : public UDP {
+class LpwaV4Udp : public UDP
+{
   IPAddress _ip;
   char _host[UDP_URL_SIZE];
   uint16_t _port;
@@ -29,7 +30,7 @@ class LpwaV4Udp : public UDP {
   int _sndBufferP;
   char _rcvBuffer[UDP_BUFF_SIZE];
   int _rcvBufferP;
-  char _mdmBuffer[UDP_BUFF_SIZE*2];
+  char _mdmBuffer[UDP_BUFF_SIZE * 2];
   int _readBuffP;
 
 public:
@@ -55,7 +56,8 @@ public:
    * hostname or port
    * @return 接続状態 (1: 成功, 0: それ以外)
    */
-  int beginPacket(String host, uint16_t port) {
+  int beginPacket(String host, uint16_t port)
+  {
     return beginPacket(host.c_str(), port);
   }
 
@@ -95,7 +97,7 @@ public:
    * Start processing the next available incoming packet
    * Returns the size of the packet in bytes, or 0 if no packets are available
    */
-  int parsePacket() {return available(); }
+  int parsePacket() { return available(); }
 
   /**
    * Number of bytes remaining in the current packet
@@ -140,7 +142,8 @@ public:
   IPAddress remoteIP() { return remoteIp(); }
 
   /** Return the IP address of the host who sent the current incoming packet */
-  IPAddress remoteIp() {
+  IPAddress remoteIp()
+  {
     IPAddress ip;
     return ip;
   }

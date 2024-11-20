@@ -9,7 +9,8 @@
 /**
  * @return GPRS接続状態　(false: 接続中, true: それ以外)
  */
-bool LpwaV4Gprs::_ready() {
+bool LpwaV4Gprs::_ready()
+{
   return true;
 }
 
@@ -23,27 +24,28 @@ bool LpwaV4Gprs::_ready() {
  * @return ネットワークの状態
  */
 NetworkStatus LpwaV4Gprs::attachGprs(const char *apn, const char *username,
-                                   const char *password,
-                                   unsigned long timeout) {
-//  Serial.println("@@@@@ LpwaV4Gprs::attachGprs() enter");
+                                     const char *password,
+                                     unsigned long timeout)
+{
+  //  Serial.println("@@@@@ LpwaV4Gprs::attachGprs() enter");
 
   const unsigned long start = millis();
 
   // disconnect PDN
   bool statCmd = theMurataLpwaCore.sendf("AT%%PDNACT=%d,1\r", 0);
-  int a = theMurataLpwaCore.waitForResponse("OK\r",NULL,0,3000,true);
+  int a = theMurataLpwaCore.waitForResponse("OK\r", NULL, 0, 3000, true);
   statCmd = theMurataLpwaCore.sendCmd("at%PDNACT?\r");
   a = theMurataLpwaCore.waitForResponse("OK\r");
-  
+
   // LTE Band 18(800MHz) only
   if (!theMurataLpwaCore.sendCmd("AT%SETCFG=\"BAND\",\"18\"\r"))
     return theMurataLpwaCore.status = LPWA_FAIL;
-  if (theMurataLpwaCore.waitForResponse("OK\r",NULL,0,1000) < 0)
+  if (theMurataLpwaCore.waitForResponse("OK\r", NULL, 0, 1000) < 0)
     return theMurataLpwaCore.status = LPWA_FAIL;
 
   if (!theMurataLpwaCore.sendCmd("AT%GETCFG=\"BAND\"\r"))
     return theMurataLpwaCore.status = LPWA_FAIL;
-  if (theMurataLpwaCore.waitForResponse("OK\r",NULL,0,1000) < 0)
+  if (theMurataLpwaCore.waitForResponse("OK\r", NULL, 0, 1000) < 0)
     return theMurataLpwaCore.status = LPWA_FAIL;
 
   // PDP setting
@@ -56,30 +58,34 @@ NetworkStatus LpwaV4Gprs::attachGprs(const char *apn, const char *username,
   // check PDP connection
   if (!theMurataLpwaCore.sendCmd("at%PDNACT?\r"))
     return theMurataLpwaCore.status = LPWA_FAIL;
-  if (theMurataLpwaCore.waitForResponse("OK\r") < 0) {
+  if (theMurataLpwaCore.waitForResponse("OK\r") < 0)
+  {
     delay(1000);
   }
 
   // PDP connect
   int cntWait = 10;
-  while (theMurataLpwaCore.getPdpStat() == 0) {
+  while (theMurataLpwaCore.getPdpStat() == 0)
+  {
     cntWait--;
-    if (cntWait < 1) {
+    if (cntWait < 1)
+    {
       Serial.println("@@@@@ LpwaV4Gprs::attachGprs() PDN timeout");
       return theMurataLpwaCore.status = LPWA_FAIL;
     }
 
     if (!theMurataLpwaCore.sendf("AT%%PDNACT=%d,1,%s\r", 1, apn))
       return theMurataLpwaCore.status = LPWA_FAIL;
-    if (theMurataLpwaCore.waitForResponse("OK\r") < 0) {
+    if (theMurataLpwaCore.waitForResponse("OK\r") < 0)
+    {
       delay(5000);
       continue;
     }
 
-  
     if (!theMurataLpwaCore.sendCmd("at%PDNACT?\r"))
       return theMurataLpwaCore.status = LPWA_FAIL;
-    if (theMurataLpwaCore.waitForResponse("OK\r") < 0) {
+    if (theMurataLpwaCore.waitForResponse("OK\r") < 0)
+    {
       delay(1000);
       continue;
     }
@@ -87,7 +93,7 @@ NetworkStatus LpwaV4Gprs::attachGprs(const char *apn, const char *username,
     delay(1000);
   }
 
-//  Serial.println("@@@@@ LpwaV4Gprs::attachGprs() exit");
+  //  Serial.println("@@@@@ LpwaV4Gprs::attachGprs() exit");
   return GPRS_READY;
 }
 
@@ -96,9 +102,11 @@ NetworkStatus LpwaV4Gprs::attachGprs(const char *apn, const char *username,
  * 接続完了した場合、LPWA_READY を返します。
  * @return ネットワークの状態
  */
-NetworkStatus LpwaV4Gprs::dettachGprs() {
+NetworkStatus LpwaV4Gprs::dettachGprs()
+{
   // disconnect PDN
-  if (theMurataLpwaCore.getPdpStat() == 1) {
+  if (theMurataLpwaCore.getPdpStat() == 1)
+  {
     bool statCmd = theMurataLpwaCore.sendf("AT%%PDNACT=%d,1\r", 0);
     int a = theMurataLpwaCore.waitForResponse("OK\r");
     statCmd = theMurataLpwaCore.sendCmd("at%PDNACT?\r");
@@ -113,17 +121,19 @@ NetworkStatus LpwaV4Gprs::dettachGprs() {
  * 得られない場合は IPAddress(0, 0, 0, 0) を返します。
  * @return WWANに割り当てられたIPアドレス
  */
-IPAddress LpwaV4Gprs::getIpAddress() {
+IPAddress LpwaV4Gprs::getIpAddress()
+{
   IPAddress ip;
   char rcvbuff[100];
   if (!theMurataLpwaCore.sendCmd("AT+CGPADDR\r"))
-       return theMurataLpwaCore.status = LPWA_FAIL;
-  if (theMurataLpwaCore.waitForResponse("OK\r",rcvbuff,100) < 0) {
+    return theMurataLpwaCore.status = LPWA_FAIL;
+  if (theMurataLpwaCore.waitForResponse("OK\r", rcvbuff, 100) < 0)
+  {
     return ip;
   }
   // NOTE: AT+CGPADDR: の応答は `+CGPADDR: <context>,<address>` 形式
   // NOTE: address のみ文字列で "" で囲まれる
   ip = theMurataLpwaCore.str2Ip(strstr(rcvbuff, "+CGPADDR: "));
-  
+
   return ip;
 }

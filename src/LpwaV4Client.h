@@ -19,8 +19,10 @@
 /**
  * TCPソケット通信のためのクラス
  */
-class LpwaV4Client : public Client {
-  enum State {
+class LpwaV4Client : public Client
+{
+  enum State
+  {
     SOCKET_NOT_DEFINED,
     SOCKET_NOT_USED,
     SOCKET_CONNECTING,
@@ -38,7 +40,7 @@ class LpwaV4Client : public Client {
 
   char _rcvBuffer[TCP_BUFF_SIZE];
   int _rcvBufferP;
-  char _mdmBuffer[TCP_BUFF_SIZE*2];
+  char _mdmBuffer[TCP_BUFF_SIZE * 2];
   int _readBuffP;
 
   int _connect();
@@ -53,7 +55,8 @@ public:
    * @param port ポート番号
    * @return 接続状態 (1: 接続, 0: それ以外)
    */
-  int connect(String host, uint16_t port) {
+  int connect(String host, uint16_t port)
+  {
     return 0;
   }
 
