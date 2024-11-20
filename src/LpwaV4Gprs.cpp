@@ -21,11 +21,13 @@ bool LpwaV4Gprs::_ready()
  * @param username APNのユーザー名
  * @param password APNのパスワード
  * @param timeout 接続を待つのを打ち切る時間 (ms)
+ * @param band LTE Band (0: auto, 18: KDDI, 19: docomo)
  * @return ネットワークの状態
  */
 NetworkStatus LpwaV4Gprs::attachGprs(const char *apn, const char *username,
                                      const char *password,
-                                     unsigned long timeout)
+                                     unsigned long timeout,
+                                     uint8_t band)
 {
   //  Serial.println("@@@@@ LpwaV4Gprs::attachGprs() enter");
 
@@ -37,23 +39,34 @@ NetworkStatus LpwaV4Gprs::attachGprs(const char *apn, const char *username,
   statCmd = theMurataLpwaCore.sendCmd("at%PDNACT?\r");
   a = theMurataLpwaCore.waitForResponse("OK\r");
 
-  // LTE Band 18(800MHz) only
-  if (!theMurataLpwaCore.sendCmd("AT%SETCFG=\"BAND\",\"18\"\r"))
-    return theMurataLpwaCore.status = LPWA_FAIL;
-  if (theMurataLpwaCore.waitForResponse("OK\r", NULL, 0, 1000) < 0)
-    return theMurataLpwaCore.status = LPWA_FAIL;
-
-  if (!theMurataLpwaCore.sendCmd("AT%GETCFG=\"BAND\"\r"))
-    return theMurataLpwaCore.status = LPWA_FAIL;
-  if (theMurataLpwaCore.waitForResponse("OK\r", NULL, 0, 1000) < 0)
-    return theMurataLpwaCore.status = LPWA_FAIL;
+  // LTE Band setting
+  if (band != 0)
+  {
+    if (!theMurataLpwaCore.sendf("AT%%SETCFG=\"BAND\",\"%02d\"\r", band))
+      return theMurataLpwaCore.status = LPWA_FAIL;
+    if (theMurataLpwaCore.waitForResponse("OK\r", NULL, 0, 1000) < 0)
+      return theMurataLpwaCore.status = LPWA_FAIL;
+    if (!theMurataLpwaCore.sendCmd("AT%GETCFG=\"BAND\"\r"))
+      return theMurataLpwaCore.status = LPWA_FAIL;
+    if (theMurataLpwaCore.waitForResponse("OK\r", NULL, 0, 1000) < 0)
+      return theMurataLpwaCore.status = LPWA_FAIL;
+  }
 
   // PDP setting
   if (!theMurataLpwaCore.sendf("AT%%PDNSET=1,%s,IP,CHAP,%s,%s,,0,0,0\r", apn, username, password))
     return theMurataLpwaCore.status = LPWA_FAIL;
   if (theMurataLpwaCore.waitForResponse("OK\r") < 0)
     return theMurataLpwaCore.status = LPWA_FAIL;
-  delay(10000); // PDP設定後はコマンドを受け付けないため待機
+
+  // PDP設定後はコマンドを受け付けないため待機
+  if (band == 0)
+  {
+    delay(20000);
+  }
+  else
+  {
+    delay(10000);
+  }
 
   // check PDP connection
   if (!theMurataLpwaCore.sendCmd("at%PDNACT?\r"))
