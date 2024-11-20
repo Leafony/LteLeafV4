@@ -22,23 +22,28 @@ LpwaModem lpwaModem;
 // Save data variables
 String IMEI = "";
 
-void setup() {
+void setup()
+{
   Serial.begin(115200);
 #ifdef USBD_USE_CDC
-  while (!Serial) {
+  while (!Serial)
+  {
     ; // wait for serial port to connect. Needed for native USB port only
   }
 #endif //  USBD_USE_CDC
   Serial.println("===== Starting LTE-M leaf V4 test-bench=======");
 
-
   // Start LPWA board
   bool connected = false;
-  while (!connected) {
+  while (!connected)
+  {
     if ((lpwaAccess.begin() == LPWA_READY) &&
-        (gprs.attachGPRS(GPRS_APN, GPRS_LOGIN, GPRS_PASSWORD) == GPRS_READY)) {
+        (gprs.attachGPRS(GPRS_APN, GPRS_LOGIN, GPRS_PASSWORD) == GPRS_READY))
+    {
       connected = true;
-    } else {
+    }
+    else
+    {
       Serial.println("connecting.");
     }
   }
@@ -59,20 +64,22 @@ void setup() {
   // IMEI, modem unique identifier
   Serial.print("Modem IMEI: ");
   IMEI = lpwaModem.getIMEI();
-  if (IMEI != NULL) {
+  if (IMEI != NULL)
+  {
     Serial.println(IMEI);
   }
 #endif
 }
 
-void loop() {
+void loop()
+{
   Serial.println("@@@@ loop");
 
   // TEST code
 #if 0
    gprs.dettachGprs();
 #endif
-  
+
 #if 1
   // returns strength and ber
   // signal strength in 0-31 scale. 31 means power > 51dBm
@@ -82,7 +89,7 @@ void loop() {
   Serial.print(csq);
   Serial.println(" [0-31]");
 #endif
-  
+
 #if 1
   // network time
   Serial.print("Network Time: ");
