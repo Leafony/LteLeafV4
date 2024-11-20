@@ -24,6 +24,9 @@ public:
   /** 電源をオフにする */
   void shutdown() { return end(); }
 
+  String getModel();
+  String getFwVersion();
+
   String getImei();
   String getIMEI() { return getImei(); }
 

@@ -7,6 +7,80 @@
 #include "LpwaV4Modem.h"
 
 /**
+ * モデムのモデル番号を取得します。begin() の後に呼び出してください。
+ * @return モデムのモデル番号
+ */
+String LpwaV4Modem::getModel()
+{
+  char rcvbuff[100];
+  char *start_p = NULL;
+  char *end_p = NULL;
+
+  if (!theMurataLpwaCore.sendCmd("AT+CGMM\r"))
+    return "";
+  if (theMurataLpwaCore.waitForResponse("OK\r", rcvbuff, 100) < 0)
+    return "";
+
+  start_p = strstr(rcvbuff, "\r\n");
+  if (start_p == NULL)
+    return "";
+  while (1)
+  {
+    if ((*start_p == '\r') || (*start_p == '\n') || (*start_p == ' '))
+    {
+      start_p++;
+    }
+    else
+    {
+      break;
+    }
+  }
+  end_p = strstr(start_p, "\r");
+  if (end_p == NULL)
+    return "";
+  *end_p = 0x0;
+  String model = start_p;
+  return model;
+}
+
+/**
+ * モデムのFWバージョンを取得します。begin() の後に呼び出してください。
+ * @return モデムのFWバージョン
+ */
+String LpwaV4Modem::getFwVersion()
+{
+  char rcvbuff[100];
+  char *start_p = NULL;
+  char *end_p = NULL;
+
+  if (!theMurataLpwaCore.sendCmd("AT+CGMR\r"))
+    return "";
+  if (theMurataLpwaCore.waitForResponse("OK\r", rcvbuff, 100) < 0)
+    return "";
+
+  start_p = strstr(rcvbuff, "\r\n");
+  if (start_p == NULL)
+    return "";
+  while (1)
+  {
+    if ((*start_p == '\r') || (*start_p == '\n') || (*start_p == ' '))
+    {
+      start_p++;
+    }
+    else
+    {
+      break;
+    }
+  }
+  end_p = strstr(start_p, "\r");
+  if (end_p == NULL)
+    return "";
+  *end_p = 0x0;
+  String fw = start_p;
+  return fw;
+}
+
+/**
  * モデムのIMEI番号を取得します。begin() の後に呼び出してください。
  * @return モデムのIMEI番号
  */
