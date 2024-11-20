@@ -53,7 +53,7 @@ NetworkStatus LpwaV4Gprs::attachGprs(const char *apn, const char *username,
     return theMurataLpwaCore.status = LPWA_FAIL;
   if (theMurataLpwaCore.waitForResponse("OK\r") < 0)
     return theMurataLpwaCore.status = LPWA_FAIL;
-  delay(10000); // PDP設定後はコマンドを受け付けないため待機
+  delay(20000); // PDP設定後はコマンドを受け付けないため待機
 
   // check PDP connection
   if (!theMurataLpwaCore.sendCmd("at%PDNACT?\r"))
