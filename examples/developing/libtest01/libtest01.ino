@@ -49,6 +49,14 @@ void setup()
   }
   Serial.println("LPWA device activate");
 
+  String model = lpwaModem.getModel();
+  Serial.print("Modem model: ");
+  Serial.println(model);
+
+  String version = lpwaModem.getFwVersion();
+  Serial.print("Firmware version: ");
+  Serial.println(version);
+
   IPAddress IPA = gprs.getIPAddress();
   Serial.print("IP: ");
   Serial.println(IPA);
@@ -59,8 +67,6 @@ void setup()
   Serial.print("Current carrier: ");
   Serial.println(CA);
 
-#if 1
-  // get modem parameters
   // IMEI, modem unique identifier
   Serial.print("Modem IMEI: ");
   IMEI = lpwaModem.getIMEI();
@@ -68,7 +74,6 @@ void setup()
   {
     Serial.println(IMEI);
   }
-#endif
 }
 
 void loop()
