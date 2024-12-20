@@ -20,13 +20,13 @@ bool LpwaV4Gprs::_ready()
  * @param apn 提供されているアクセスポイント名 (APN)
  * @param username APNのユーザー名
  * @param password APNのパスワード
+ * @param mccmnc MCC/MNC NULLの場合は自動選択
  * @param timeout 接続を待つのを打ち切る時間 (ms)
- * @param band LTE Band (0: auto, 18: KDDI, 1,19: docomo)
  * @return ネットワークの状態
  */
 NetworkStatus LpwaV4Gprs::attachGprs(const char *apn, const char *username,
                                      const char *password,
-                                     uint8_t band,
+                                     const char *mccmnc,
                                      unsigned long timeout)
 {
   // Serial.println("@@@@@ LpwaV4Gprs::attachGprs() enter");
@@ -39,14 +39,10 @@ NetworkStatus LpwaV4Gprs::attachGprs(const char *apn, const char *username,
   statCmd = theMurataLpwaCore.sendCmd("at%PDNACT?\r");
   a = theMurataLpwaCore.waitForResponse("OK\r");
 
-  // LTE Band setting
-  if (band != 0)
+  if (mccmnc != NULL)
   {
-    if (!theMurataLpwaCore.sendf("AT%%SETCFG=\"BAND\",\"%02d\"\r", band))
-      return theMurataLpwaCore.status = LPWA_FAIL;
-    if (theMurataLpwaCore.waitForResponse("OK\r", NULL, 0, 1000) < 0)
-      return theMurataLpwaCore.status = LPWA_FAIL;
-    if (!theMurataLpwaCore.sendCmd("AT%GETCFG=\"BAND\"\r"))
+    Serial.println(mccmnc);
+    if (!theMurataLpwaCore.sendf("AT+COPS=1,2,%s\r", mccmnc))
       return theMurataLpwaCore.status = LPWA_FAIL;
     if (theMurataLpwaCore.waitForResponse("OK\r", NULL, 0, 1000) < 0)
       return theMurataLpwaCore.status = LPWA_FAIL;
