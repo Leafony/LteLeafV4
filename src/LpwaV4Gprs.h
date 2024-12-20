@@ -20,16 +20,19 @@ class LpwaV4Gprs
 
 public:
   NetworkStatus attachGprs(const char *apn, const char *username,
-                           const char *password, unsigned long timeout = 30000, uint8_t band = 0);
+                           const char *password, uint8_t band = 0, unsigned long timeout = 10000);
   NetworkStatus attachGPRS(const char *apn, const char *username,
                            const char *password,
-                           unsigned long timeout = 30000, uint8_t band = 0)
+                           uint8_t band = 0,
+                           unsigned long timeout = 10000)
   {
-    return attachGprs(apn, username, password, timeout, band);
+    return attachGprs(apn, username, password, band, timeout);
   }
   NetworkStatus dettachGprs();
   IPAddress getIpAddress();
   IPAddress getIPAddress() { return getIpAddress(); }
+  String getAvailableOperators();
+  String getCellularOperatorSelection();
 };
 
 #endif
