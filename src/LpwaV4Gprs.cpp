@@ -21,15 +21,15 @@ bool LpwaV4Gprs::_ready()
  * @param username APNのユーザー名
  * @param password APNのパスワード
  * @param timeout 接続を待つのを打ち切る時間 (ms)
- * @param band LTE Band (0: auto, 18: KDDI, 19: docomo)
+ * @param band LTE Band (0: auto, 18: KDDI, 1,19: docomo)
  * @return ネットワークの状態
  */
 NetworkStatus LpwaV4Gprs::attachGprs(const char *apn, const char *username,
                                      const char *password,
-                                     unsigned long timeout,
-                                     uint8_t band)
+                                     uint8_t band,
+                                     unsigned long timeout)
 {
-  //  Serial.println("@@@@@ LpwaV4Gprs::attachGprs() enter");
+  // Serial.println("@@@@@ LpwaV4Gprs::attachGprs() enter");
 
   const unsigned long start = millis();
 
@@ -59,14 +59,7 @@ NetworkStatus LpwaV4Gprs::attachGprs(const char *apn, const char *username,
     return theMurataLpwaCore.status = LPWA_FAIL;
 
   // PDP設定後はコマンドを受け付けないため待機
-  if (band == 0)
-  {
-    delay(20000);
-  }
-  else
-  {
-    delay(10000);
-  }
+  delay(timeout);
 
   // check PDP connection
   if (!theMurataLpwaCore.sendCmd("at%PDNACT?\r"))
@@ -149,4 +142,79 @@ IPAddress LpwaV4Gprs::getIpAddress()
   ip = theMurataLpwaCore.str2Ip(strstr(rcvbuff, "+CGPADDR: "));
 
   return ip;
+}
+
+/**
+ * 利用可能なセルラー・オペレーターのリストを返す
+ * @details 利用可能なオペレーターリストが取得できるまでに時間がかかる場合があります
+ * @return セルラー・オペレーターのリスト
+ */
+String LpwaV4Gprs::getAvailableOperators()
+{
+  char rcvbuff[256];
+  char *start_p = NULL;
+  char *end_p = NULL;
+
+  if (!theMurataLpwaCore.sendCmd("AT+COPS=?\r"))
+    return "";
+  if (theMurataLpwaCore.waitForResponse("OK\r", rcvbuff, 256) < 0)
+    return "";
+
+  start_p = strstr(rcvbuff, "\r\n");
+  if (start_p == NULL)
+    return "";
+  while (1)
+  {
+    if ((*start_p == '\r') || (*start_p == '\n') || (*start_p == ' '))
+    {
+      start_p++;
+    }
+    else
+    {
+      break;
+    }
+  }
+  end_p = strstr(start_p, "\r");
+  if (end_p == NULL)
+    return "";
+  *end_p = 0x0;
+  String cops = start_p;
+  return cops;
+}
+
+/**
+ * 現在のセルラー・オペレーターの選択状態を返す
+ * @return セルラー・オペレーターの選択状態
+ */
+String LpwaV4Gprs::getCellularOperatorSelection()
+{
+  char rcvbuff[100];
+  char *start_p = NULL;
+  char *end_p = NULL;
+
+  if (!theMurataLpwaCore.sendCmd("AT+COPS?\r"))
+    return "";
+  if (theMurataLpwaCore.waitForResponse("OK\r", rcvbuff, 100) < 0)
+    return "";
+
+  start_p = strstr(rcvbuff, "\r\n");
+  if (start_p == NULL)
+    return "";
+  while (1)
+  {
+    if ((*start_p == '\r') || (*start_p == '\n') || (*start_p == ' '))
+    {
+      start_p++;
+    }
+    else
+    {
+      break;
+    }
+  }
+  end_p = strstr(start_p, "\r");
+  if (end_p == NULL)
+    return "";
+  *end_p = 0x0;
+  String cops = start_p;
+  return cops;
 }
