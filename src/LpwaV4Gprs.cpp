@@ -41,7 +41,6 @@ NetworkStatus LpwaV4Gprs::attachGprs(const char *apn, const char *username,
 
   if (mccmnc != NULL)
   {
-    Serial.println(mccmnc);
     if (!theMurataLpwaCore.sendf("AT+COPS=1,2,%s\r", mccmnc))
       return theMurataLpwaCore.status = LPWA_FAIL;
     if (theMurataLpwaCore.waitForResponse("OK\r", NULL, 0, 30000) < 0)
