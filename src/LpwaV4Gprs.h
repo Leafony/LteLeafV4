@@ -20,10 +20,10 @@ class LpwaV4Gprs
 
 public:
   NetworkStatus attachGprs(const char *apn, const char *username,
-                           const char *password, const char *mccmnc, unsigned long timeout = 10000);
+                           const char *password, const char *mccmnc = NULL, unsigned long timeout = 10000);
   NetworkStatus attachGPRS(const char *apn, const char *username,
                            const char *password,
-                           const char *mccmnc, unsigned long timeout = 10000)
+                           const char *mccmnc = NULL, unsigned long timeout = 10000)
   {
     return attachGprs(apn, username, password, mccmnc, timeout);
   }
