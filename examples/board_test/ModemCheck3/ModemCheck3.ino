@@ -85,7 +85,7 @@ String atComm(char *trsbuff){
   if (!theMurataLpwaCore.sendCmd((const char*)trsbuff))
     return "";
 
-  if (theMurataLpwaCore.waitForResponse("OK\r", rcvbuff, 200000) < 0)
+  if (theMurataLpwaCore.waitForResponse("OK\r", rcvbuff, 30000) < 0)
     return "";
 
   start_p = strstr(rcvbuff, "\r\n");
