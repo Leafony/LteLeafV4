@@ -26,7 +26,7 @@ bool LpwaV4Gprs::_ready()
  */
 NetworkStatus LpwaV4Gprs::attachGprs(const char *apn, const char *username,
                                      const char *password,
-                                     const char *mccmnc,
+                                     uint8_t band,
                                      unsigned long timeout)
 {
   // Serial.println("@@@@@ LpwaV4Gprs::attachGprs() enter");
@@ -39,11 +39,16 @@ NetworkStatus LpwaV4Gprs::attachGprs(const char *apn, const char *username,
   statCmd = theMurataLpwaCore.sendCmd("at%PDNACT?\r");
   a = theMurataLpwaCore.waitForResponse("OK\r");
 
-  if (mccmnc != NULL)
+  // LTE Band setting
+  if (band != 0)
   {
-    if (!theMurataLpwaCore.sendf("AT+COPS=1,2,%s\r", mccmnc))
+    if (!theMurataLpwaCore.sendf("AT%%SETCFG=\"BAND\",\"%02d\"\r", band))
       return theMurataLpwaCore.status = LPWA_FAIL;
-    if (theMurataLpwaCore.waitForResponse("OK\r", NULL, 0, 30000) < 0)
+    if (theMurataLpwaCore.waitForResponse("OK\r", NULL, 0, 1000) < 0)
+      return theMurataLpwaCore.status = LPWA_FAIL;
+    if (!theMurataLpwaCore.sendCmd("AT%GETCFG=\"BAND\"\r"))
+      return theMurataLpwaCore.status = LPWA_FAIL;
+    if (theMurataLpwaCore.waitForResponse("OK\r", NULL, 0, 1000) < 0)
       return theMurataLpwaCore.status = LPWA_FAIL;
   }
 
