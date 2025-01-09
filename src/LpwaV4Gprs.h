@@ -24,10 +24,10 @@ public:
   static const uint8_t LPWA_V4_GPRS_BAND_DOCOMO = 19;
 
   NetworkStatus attachGprs(const char *apn, const char *username,
-                           const char *password, const char *band = LPWA_V4_GPRS_BAND_DOCOMO, unsigned long timeout = 10000);
+                           const char *password, const uint8_t band = LPWA_V4_GPRS_BAND_DOCOMO, unsigned long timeout = 10000);
   NetworkStatus attachGPRS(const char *apn, const char *username,
                            const char *password,
-                           const char *band = LPWA_V4_GPRS_BAND_DOCOMO, unsigned long timeout = 10000)
+                           const uint8_t band = LPWA_V4_GPRS_BAND_DOCOMO, unsigned long timeout = 10000)
   {
     return attachGprs(apn, username, password, band, timeout);
   }
