@@ -38,7 +38,7 @@ void setup()
   while (!connected)
   {
     if ((lpwaAccess.begin() == LPWA_READY) &&
-        (gprs.attachGPRS(GPRS_APN, GPRS_LOGIN, GPRS_PASSWORD) == GPRS_READY))
+        (gprs.attachGPRS(GPRS_APN, GPRS_LOGIN, GPRS_PASSWORD, gprs.LPWA_V4_GPRS_BAND_DOCOMO) == GPRS_READY))
     {
       connected = true;
     }
