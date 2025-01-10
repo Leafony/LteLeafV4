@@ -20,6 +20,10 @@
 //==============================================================
 // define
 //==============================================================
+#define GPRS_APN "your_apn_here"
+#define GPRS_LOGIN "your_login_here"
+#define GPRS_PASSWORD "your_password_here"
+
 #define ATCOMM_NAME_SIZE  10        // number of assigned AT command
 
 #define TX_BUFFSIZE       64        // AT command 
@@ -238,7 +242,9 @@ void setup() {
 
   // Repeated initialization until modem is ready
   while (!connected) {
-    if (lpwaAccess.begin() == LPWA_READY) {
+    if ((lpwaAccess.begin() == LPWA_READY) &&
+        (gprs.attachGPRS(GPRS_APN, GPRS_LOGIN, GPRS_PASSWORD, gprs.LPWA_V4_GPRS_BAND_KDDI) == GPRS_READY))
+ {
       connected = true;
     } else {
       Serial.println("Initializing modem...");
