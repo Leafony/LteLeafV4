@@ -1,29 +1,18 @@
-//=====================================================================
-//  Leafony Platform sample sketch
-//     Platform     : STM32
-//     Processor    : STM32 MCU
-//     Application  : LTE-M ModemCheck
+//==============================================================================
+// Murata LTE command chekck
 //
-//     Leaf configuration
-//       (1) AP03 STM32 MCU
-//       (2) AZ01 USB
-//       (3) AC08 LTE-M Mary
-//
-//    (c) 2024 Trillion-Node Study Group
-//    Released under the MIT license
-//    https://opensource.org/licenses/MIT
-//
-//      Rev.00 2024/12/25  First release
-//=====================================================================
+// 2024/12/25
+// U-Tokyo
+//==============================================================================
 #include <LpwaV4.h>
+#include "arduino_secrets.h"
+
+
+
 
 //==============================================================
 // define
 //==============================================================
-#define GPRS_APN "your_apn_here"
-#define GPRS_LOGIN "your_login_here"
-#define GPRS_PASSWORD "your_password_here"
-
 #define ATCOMM_NAME_SIZE  10        // number of assigned AT command
 
 #define TX_BUFFSIZE       64        // AT command 
@@ -42,6 +31,12 @@ LpwaModem lpwaModem;
 //==============================================================
 // register
 //==============================================================
+// Please enter your sensitive data in the Secret tab or arduino_secrets.h
+// APN data
+const char GPRS_APN[] = SECRET_GPRS_APN;
+const char GPRS_LOGIN[] = SECRET_GPRS_LOGIN;
+const char GPRS_PASSWORD[] = SECRET_GPRS_PASSWORD;
+
 // Save data variables
 String IMEI = "";
 
@@ -89,7 +84,7 @@ String atComm(char *trsbuff){
   if (!theMurataLpwaCore.sendCmd((const char*)trsbuff))
     return "";
 
-  if (theMurataLpwaCore.waitForResponse("OK\r", rcvbuff, 30000) < 0)
+  if (theMurataLpwaCore.waitForResponse("OK\r", rcvbuff, 50000) < 0)
     return "";
 
   start_p = strstr(rcvbuff, "\r\n");
@@ -128,9 +123,9 @@ void putMenu(void)
   Serial.println("   at3         :" + String(atCommNames[3]));
   Serial.println("   at4         :" + String(atCommNames[4]));
   Serial.println("   at5         :" + String(atCommNames[5]));
-  Serial.println("   at6 MCCMNC  :" + String(atCommNames[6]) + "MCCMNC");
+  Serial.println("   at6 number  :" + String(atCommNames[6]) + "number");
   Serial.println("   at7         :" + String(atCommNames[7]));
-  Serial.println("   at8 BAND  :" + String(atCommNames[8]) + "BAND\"");
+  Serial.println("   at8 number  :" + String(atCommNames[8]) + "number\"");
   Serial.println("   at9         :" + String(atCommNames[9]));
   Serial.println("------------------------------------------");
   Serial.println();
@@ -240,31 +235,41 @@ void setup() {
 
   Serial.println("---------------------------------");
 
-  // Repeated initialization until modem is ready
-  while (!connected) {
+  while (!connected)
+  {
     if ((lpwaAccess.begin() == LPWA_READY) &&
-        (gprs.attachGPRS(GPRS_APN, GPRS_LOGIN, GPRS_PASSWORD, gprs.LPWA_V4_GPRS_BAND_DOCOMO) == GPRS_READY))
- {
+        (gprs.attachGPRS(GPRS_APN, GPRS_LOGIN, GPRS_PASSWORD) == GPRS_READY))
+    {
       connected = true;
-    } else {
-      Serial.println("Initializing modem...");
+    }
+    else
+    {
+      Serial.println("connecting.");
     }
   }
-
-  // Get modem information
   String model = lpwaModem.getModel();
   Serial.print("Modem model: ");
   Serial.println(model);
 
-  // Get the modem firmware version
   String version = lpwaModem.getFwVersion();
   Serial.print("Firmware version: ");
   Serial.println(version);
 
-  // モデムのIMEIを取得
+  //IPAddress IPA = gprs.getIPAddress();
+  //Serial.print("IP: ");
+  //Serial.println(IPA);
+
+  // TEST code
+  // currently connected carrier
+  //String CA = scannerNetworks.getCurrentCarrier();
+  //Serial.print("Current carrier: ");
+  //Serial.println(CA);
+
+  // IMEI, modem unique identifier
   Serial.print("Modem IMEI: ");
-  String IMEI = lpwaModem.getIMEI();
-  if (IMEI != NULL) {
+  IMEI = lpwaModem.getIMEI();
+  if (IMEI != NULL)
+  {
     Serial.println(IMEI);
   }
   
