@@ -243,7 +243,7 @@ void setup() {
   // Repeated initialization until modem is ready
   while (!connected) {
     if ((lpwaAccess.begin() == LPWA_READY) &&
-        (gprs.attachGPRS(GPRS_APN, GPRS_LOGIN, GPRS_PASSWORD, gprs.LPWA_V4_GPRS_BAND_KDDI) == GPRS_READY))
+        (gprs.attachGPRS(GPRS_APN, GPRS_LOGIN, GPRS_PASSWORD, gprs.LPWA_V4_GPRS_BAND_DOCOMO) == GPRS_READY))
  {
       connected = true;
     } else {
