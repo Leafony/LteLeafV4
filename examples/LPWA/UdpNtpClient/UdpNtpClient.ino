@@ -40,11 +40,13 @@ LpwaAccess lpwaAccess;
 // A UDP instance to let us send and receive packets over UDP
 LpwaUdp Udp;
 
-void setup() {
+void setup()
+{
   // Open serial communications and wait for port to open:
   Serial.begin(115200);
 #ifdef USBD_USE_CDC
-  while (!Serial) {
+  while (!Serial)
+  {
     ; // wait for serial port to connect. Needed for native USB port only
   }
 #endif //  USBD_USE_CDC
@@ -55,11 +57,15 @@ void setup() {
 
   // After starting the modem with LpwaAccess.begin()
   // attach the shield to the GPRS network with the APN, login and password
-  while (!connected) {
+  while (!connected)
+  {
     if ((lpwaAccess.begin() == LPWA_READY) &&
-        (gprs.attachGPRS(GPRS_APN, GPRS_LOGIN, GPRS_PASSWORD) == GPRS_READY)) {
+        (gprs.attachGPRS(GPRS_APN, GPRS_LOGIN, GPRS_PASSWORD, gprs.LPWA_V4_GPRS_BAND_KDDI) == GPRS_READY))
+    {
       connected = true;
-    } else {
+    }
+    else
+    {
       Serial.println("connecting.");
       delay(1000);
     }
@@ -69,11 +75,13 @@ void setup() {
   Udp.begin();
 }
 
-void loop() {
+void loop()
+{
   sendNTPpacket(timeServer); // send an NTP packet to a time server
   // wait to see if a reply is available
   delay(1000);
-  if (Udp.parsePacket()) {
+  if (Udp.parsePacket())
+  {
     Serial.println("packet received");
     // We've received a packet, read the data from it
     Udp.read(packetBuffer, NTP_PACKET_SIZE); // read the packet into the buffer
@@ -104,14 +112,16 @@ void loop() {
     Serial.print((epoch % 86400L) /
                  3600); // print the hour (86400 equals secs per day)
     Serial.print(':');
-    if (((epoch % 3600) / 60) < 10) {
+    if (((epoch % 3600) / 60) < 10)
+    {
       // In the first 10 minutes of each hour, we'll want a leading '0'
       Serial.print('0');
     }
     Serial.print((epoch % 3600) /
                  60); // print the minute (3600 equals secs per minute)
     Serial.print(':');
-    if ((epoch % 60) < 10) {
+    if ((epoch % 60) < 10)
+    {
       // In the first 10 seconds of each minute, we'll want a leading '0'
       Serial.print('0');
     }
@@ -122,7 +132,8 @@ void loop() {
 }
 
 // send an NTP request to the time server at the given address
-unsigned long sendNTPpacket(String &host) {
+unsigned long sendNTPpacket(String &host)
+{
   // set all bytes in the buffer to 0
   memset(packetBuffer, 0, NTP_PACKET_SIZE);
   // Initialize values needed to form NTP request
@@ -136,7 +147,7 @@ unsigned long sendNTPpacket(String &host) {
   packetBuffer[13] = 0x4E;
   packetBuffer[14] = 49;
   packetBuffer[15] = 52;
-  
+
   // all NTP fields have been given values, now
   // you can send a packet requesting a timestamp:
   Udp.beginPacket(host, 123); // NTP requests are to port 123

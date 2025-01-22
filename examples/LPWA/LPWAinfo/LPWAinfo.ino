@@ -22,23 +22,28 @@ LpwaModem lpwaModem;
 // Save data variables
 String IMEI = "";
 
-void setup() {
+void setup()
+{
   Serial.begin(115200);
 #ifdef USBD_USE_CDC
-  while (!Serial) {
+  while (!Serial)
+  {
     ; // wait for serial port to connect. Needed for native USB port only
   }
 #endif //  USBD_USE_CDC
   Serial.println("===== Starting LTE-M leaf device info =======");
 
-
   // Start LPWA board
   bool connected = false;
-  while (!connected) {
+  while (!connected)
+  {
     if ((lpwaAccess.begin() == LPWA_READY) &&
-        (gprs.attachGPRS(GPRS_APN, GPRS_LOGIN, GPRS_PASSWORD) == GPRS_READY)) {
+        (gprs.attachGPRS(GPRS_APN, GPRS_LOGIN, GPRS_PASSWORD, gprs.LPWA_V4_GPRS_BAND_KDDI) == GPRS_READY))
+    {
       connected = true;
-    } else {
+    }
+    else
+    {
       Serial.println("connecting.");
     }
   }
@@ -48,12 +53,14 @@ void setup() {
   // IMEI, modem unique identifier
   Serial.print("Modem IMEI: ");
   IMEI = lpwaModem.getIMEI();
-  if (IMEI != NULL) {
+  if (IMEI != NULL)
+  {
     Serial.println(IMEI);
   }
 }
 
-void loop() {
+void loop()
+{
   Serial.println("@@@@ loop");
 
   IPAddress IPA = gprs.getIPAddress();

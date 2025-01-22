@@ -7,18 +7,15 @@
 #include <LpwaV4.h>
 #include "arduino_secrets.h"
 
-
-
-
 //==============================================================
 // define
 //==============================================================
-#define ATCOMM_NAME_SIZE  10        // number of assigned AT command
+#define ATCOMM_NAME_SIZE 10 // number of assigned AT command
 
-#define TX_BUFFSIZE       64        // AT command 
-#define RX_BUFFSIZE       100       // Response of AT command
+#define TX_BUFFSIZE 64  // AT command
+#define RX_BUFFSIZE 100 // Response of AT command
 
-#define UART_RX_BUFFSIZE  64        // UART from PC to STM32
+#define UART_RX_BUFFSIZE 64 // UART from PC to STM32
 
 //==============================================================
 // instance
@@ -44,23 +41,23 @@ String IMEI = "";
 // AT command buffer
 //--------------------
 const char *atCommNames[ATCOMM_NAME_SIZE + 1] = {
-                      "AT",                   // at0: check LTE module alive
-                      "AT+CFUN=1,1",          // at1: reset defualt
-                      "AT+CPIN?",             // at2: check SIM card
-                      "AT+COPS=?",            // at3: reserch available network venders
-                      "AT+COPS?",             // at4: check connected connected vender
-                      "AT+COPS=0",            // at5: auto mode
-                      "AT+COPS=1,2,",         // at6: manual mode
-                      "AT%GETCFG=\"BAND\"",   // at7: check connected band
-                      "AT%SETCFG=\"BAND\",\"",// at8: connect selected band
-                      "AT+CSQ"                // at9: check wave signel strength
+    "AT",                    // at0: check LTE module alive
+    "AT+CFUN=1,1",           // at1: reset defualt
+    "AT+CPIN?",              // at2: check SIM card
+    "AT+COPS=?",             // at3: reserch available network venders
+    "AT+COPS?",              // at4: check connected connected vender
+    "AT+COPS=0",             // at5: auto mode
+    "AT+COPS=1,2,",          // at6: manual mode
+    "AT%GETCFG=\"BAND\"",    // at7: check connected band
+    "AT%SETCFG=\"BAND\",\"", // at8: connect selected band
+    "AT+CSQ"                 // at9: check wave signel strength
 };
 
 char sendBuff[TX_BUFFSIZE];
 char atCommBuff[TX_BUFFSIZE];
 String atResp;
 
-bool isATcorrect= 0;
+bool isATcorrect = 0;
 
 //--------------------
 // UART recieve buffer
@@ -75,13 +72,14 @@ bool isRecieved = 0;
 //==============================================================
 // AT command
 //==============================================================-
-String atComm(char *trsbuff){
+String atComm(char *trsbuff)
+{
 
   char rcvbuff[RX_BUFFSIZE];
   char *start_p = NULL;
   char *end_p = NULL;
 
-  if (!theMurataLpwaCore.sendCmd((const char*)trsbuff))
+  if (!theMurataLpwaCore.sendCmd((const char *)trsbuff))
     return "";
 
   if (theMurataLpwaCore.waitForResponse("OK\r", rcvbuff, 50000) < 0)
@@ -109,7 +107,6 @@ String atComm(char *trsbuff){
   return model;
 }
 
-
 //==============================================================
 // menue
 //==============================================================-
@@ -134,16 +131,18 @@ void putMenu(void)
 //==============================================================
 // UART from PC to STM32
 //==============================================================-
-void readUart(){
+void readUart()
+{
 
   char c;
 
   resDataFlg = 0;
-  
+
   //-------------------
   // read data
   //------------------
-  if(Serial.available()){
+  if (Serial.available())
+  {
 
     //-------------------
     // data clear
@@ -155,60 +154,66 @@ void readUart(){
     //-------------------
     isFinished = 0;
     isRecieved = 0;
-    buffCount   = 0;
-    
-    while(isFinished == 0){
+    buffCount = 0;
 
-      if(Serial.available()){
+    while (isFinished == 0)
+    {
 
-         c = Serial.read();
+      if (Serial.available())
+      {
 
-         if(c != 0){
+        c = Serial.read();
 
-           rxBuff[buffCount] = c;
-           buffCount += 1;
-         }
-         
+        if (c != 0)
+        {
+
+          rxBuff[buffCount] = c;
+          buffCount += 1;
+        }
       }
-      else{
+      else
+      {
 
-        delay(100);           // wait 1ms in case of no data in buffer
+        delay(100); // wait 1ms in case of no data in buffer
       }
 
       //-------------------------------------------------------
       // recieve <CR>
       //-------------------------------------------------------
-      if(c == '\r'){
+      if (c == '\r')
+      {
 
         isRecieved = 1;
       }
-        
+
       //-------------------------------------------------------
       // recieve <LF>
       //-------------------------------------------------------
-      else if((c == '\n') && (isRecieved == 1)){
+      else if ((c == '\n') && (isRecieved == 1))
+      {
 
         isFinished = 1;
 
         resDataFlg = 1;
       }
-        
+
       //--------------------------------------------------
       // recieve not <LF>
-      //--------------------------------------------------          
-      else{
+      //--------------------------------------------------
+      else
+      {
 
         isRecieved = 0;
       }
 
       //--------------------------------------------------
       // finish if recieved over maximum (include "\r\n")
-      //--------------------------------------------------         
-      if(buffCount > (UART_RX_BUFFSIZE -1)){
+      //--------------------------------------------------
+      if (buffCount > (UART_RX_BUFFSIZE - 1))
+      {
 
         isFinished = 1;
-      }      
-
+      }
     }
   }
 }
@@ -216,18 +221,21 @@ void readUart(){
 //---------------------------------------
 // clear rxUART
 //---------------------------------------
-void rxUARTClear(){
+void rxUARTClear()
+{
 
-  for(uint8_t i=0; i<UART_RX_BUFFSIZE; i++){
+  for (uint8_t i = 0; i < UART_RX_BUFFSIZE; i++)
+  {
 
     rxBuff[i] = 0;
-  } 
+  }
 }
 
 //==============================================================
 // setup
 //==============================================================
-void setup() {
+void setup()
+{
 
   bool connected = false;
 
@@ -238,7 +246,7 @@ void setup() {
   while (!connected)
   {
     if ((lpwaAccess.begin() == LPWA_READY) &&
-        (gprs.attachGPRS(GPRS_APN, GPRS_LOGIN, GPRS_PASSWORD) == GPRS_READY))
+        (gprs.attachGPRS(GPRS_APN, GPRS_LOGIN, GPRS_PASSWORD, gprs.LPWA_V4_GPRS_BAND_KDDI) == GPRS_READY))
     {
       connected = true;
     }
@@ -255,15 +263,15 @@ void setup() {
   Serial.print("Firmware version: ");
   Serial.println(version);
 
-  //IPAddress IPA = gprs.getIPAddress();
-  //Serial.print("IP: ");
-  //Serial.println(IPA);
+  // IPAddress IPA = gprs.getIPAddress();
+  // Serial.print("IP: ");
+  // Serial.println(IPA);
 
   // TEST code
   // currently connected carrier
-  //String CA = scannerNetworks.getCurrentCarrier();
-  //Serial.print("Current carrier: ");
-  //Serial.println(CA);
+  // String CA = scannerNetworks.getCurrentCarrier();
+  // Serial.print("Current carrier: ");
+  // Serial.println(CA);
 
   // IMEI, modem unique identifier
   Serial.print("Modem IMEI: ");
@@ -272,7 +280,7 @@ void setup() {
   {
     Serial.println(IMEI);
   }
-  
+
   Serial.println("---------------------------------");
   Serial.println();
 }
@@ -280,130 +288,135 @@ void setup() {
 //==============================================================
 // loop
 //==============================================================
-void loop() {
+void loop()
+{
 
   readUart();
 
-  if(resDataFlg == 1){
+  if (resDataFlg == 1)
+  {
 
     resDataFlg = 0;
 
     //-----------------------------------------------
     // AT command
     //-----------------------------------------------
-    if((rxBuff[0] == 'a') && (rxBuff[1] == 't' ) ){
+    if ((rxBuff[0] == 'a') && (rxBuff[1] == 't'))
+    {
 
       isATcorrect = 0;
 
-      memset((char*)sendBuff, 0, TX_BUFFSIZE);
-      memset((char*)atCommBuff, 0, TX_BUFFSIZE);
+      memset((char *)sendBuff, 0, TX_BUFFSIZE);
+      memset((char *)atCommBuff, 0, TX_BUFFSIZE);
 
       //-------------------------
       // check at command: at*
       //-------------------------
-      switch(rxBuff[2]){
+      switch (rxBuff[2])
+      {
 
-        //----------------------
-        // at0
-        //----------------------
-        case '0':
+      //----------------------
+      // at0
+      //----------------------
+      case '0':
 
-          isATcorrect = 1;
-          strcat(atCommBuff,atCommNames[0]);
+        isATcorrect = 1;
+        strcat(atCommBuff, atCommNames[0]);
         break;
 
-        //----------------------
-        // at1
-        //----------------------
-        case '1':
-          isATcorrect = 1;
-          strcat(atCommBuff,atCommNames[1]);
-
-        break;
-
-        //----------------------
-        // at2
-        //----------------------
-        case '2':
-          isATcorrect = 1;
-          strcat(atCommBuff,atCommNames[2]);
+      //----------------------
+      // at1
+      //----------------------
+      case '1':
+        isATcorrect = 1;
+        strcat(atCommBuff, atCommNames[1]);
 
         break;
 
-        //----------------------
-        // at3
-        //----------------------
-        case '3':
-          isATcorrect = 1;
-          strcat(atCommBuff,atCommNames[3]);
-
-        break;
-        //----------------------
-        // at4
-        //----------------------
-        case '4':
-          isATcorrect = 1;
-          strcat(atCommBuff,atCommNames[4]);
+      //----------------------
+      // at2
+      //----------------------
+      case '2':
+        isATcorrect = 1;
+        strcat(atCommBuff, atCommNames[2]);
 
         break;
 
-        //----------------------
-        // at5
-        //----------------------
-        case '5':
-          isATcorrect = 1;
-          strcat(atCommBuff,atCommNames[5]);
+      //----------------------
+      // at3
+      //----------------------
+      case '3':
+        isATcorrect = 1;
+        strcat(atCommBuff, atCommNames[3]);
+
+        break;
+      //----------------------
+      // at4
+      //----------------------
+      case '4':
+        isATcorrect = 1;
+        strcat(atCommBuff, atCommNames[4]);
 
         break;
 
-        //----------------------
-        // at6
-        //----------------------
-        case '6':
-
-          isATcorrect = 1;
-          strcat(atCommBuff,atCommNames[6]);
-
-          for(uint8_t i = 4; i < (buffCount-2); i++){
-
-            sprintf(sendBuff,"%c",rxBuff[i]);
-            strcat(atCommBuff,sendBuff);
-          }
-        break;
-
-        //----------------------
-        // at7
-        //----------------------
-        case '7':
-          isATcorrect = 1;
-          strcat(atCommBuff,atCommNames[7]);
-
+      //----------------------
+      // at5
+      //----------------------
+      case '5':
+        isATcorrect = 1;
+        strcat(atCommBuff, atCommNames[5]);
 
         break;
 
-        //----------------------
-        // at8
-        //----------------------
-        case '8':
+      //----------------------
+      // at6
+      //----------------------
+      case '6':
 
-          isATcorrect = 1;
-          strcat(atCommBuff,atCommNames[8]);
+        isATcorrect = 1;
+        strcat(atCommBuff, atCommNames[6]);
 
-          for(uint8_t i = 4; i < (buffCount-2); i++){
+        for (uint8_t i = 4; i < (buffCount - 2); i++)
+        {
 
-            sprintf(sendBuff,"%c",rxBuff[i]);
-            strcat(atCommBuff,sendBuff);
-          }
-
-          sprintf((char*)sendBuff,"\"");
-          strcat(atCommBuff,sendBuff);
+          sprintf(sendBuff, "%c", rxBuff[i]);
+          strcat(atCommBuff, sendBuff);
+        }
         break;
-        //----------------------
-        // at9
-        //----------------------
-        case '9':
-          isATcorrect = 1;
-          strcat(atCommBuff,atCommNames[9]);
+
+      //----------------------
+      // at7
+      //----------------------
+      case '7':
+        isATcorrect = 1;
+        strcat(atCommBuff, atCommNames[7]);
+
+        break;
+
+      //----------------------
+      // at8
+      //----------------------
+      case '8':
+
+        isATcorrect = 1;
+        strcat(atCommBuff, atCommNames[8]);
+
+        for (uint8_t i = 4; i < (buffCount - 2); i++)
+        {
+
+          sprintf(sendBuff, "%c", rxBuff[i]);
+          strcat(atCommBuff, sendBuff);
+        }
+
+        sprintf((char *)sendBuff, "\"");
+        strcat(atCommBuff, sendBuff);
+        break;
+      //----------------------
+      // at9
+      //----------------------
+      case '9':
+        isATcorrect = 1;
+        strcat(atCommBuff, atCommNames[9]);
 
         break;
       }
@@ -411,33 +424,36 @@ void loop() {
       //-------------------------
       // send AT command with "\r"
       //-------------------------
-      if(isATcorrect == 1){
+      if (isATcorrect == 1)
+      {
 
         Serial.println(String(atCommBuff));
 
-        sprintf((char*)sendBuff,"\r");
-        strcat(atCommBuff,sendBuff);
+        sprintf((char *)sendBuff, "\r");
+        strcat(atCommBuff, sendBuff);
 
         atResp = atComm(atCommBuff);
 
         Serial.println(atResp);
         Serial.flush();
       }
-      else{
+      else
+      {
 
         Serial.println("Error");
       }
-
     }
     //-----------------------------------------------
     // menue
     //-----------------------------------------------
-    else if(rxBuff[0] == 'm'){
+    else if (rxBuff[0] == 'm')
+    {
 
       putMenu();
       Serial.flush();
     }
-    else{
+    else
+    {
 
       Serial.println("Error");
     }

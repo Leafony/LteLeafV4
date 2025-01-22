@@ -4,7 +4,7 @@
  *
  *  created 6 Jan 2022
  * by kt-nakamura
- * 
+ *
  * このソースコードをビルドする際は次のライブラリをインストールすること
  * STM32LowPower-master
  * STM32RTC-master
@@ -13,17 +13,17 @@
 
 // LPWA 省電力モード
 // いずれの１つを選択すること
-//#define USE_D_HIBERNATE1
-//#define USE_D_HIBERNATE2
-//#define USE_DEEP_SLEEP
+// #define USE_D_HIBERNATE1
+// #define USE_D_HIBERNATE2
+// #define USE_DEEP_SLEEP
 #define USE_POWEROFF
 
 // STM32 省電力
 #define STM32_DEEP_SLEEP
 
 #ifdef STM32_DEEP_SLEEP
- #include "STM32LowPower.h"
- #include <STM32RTC.h>
+#include "STM32LowPower.h"
+#include <STM32RTC.h>
 #endif
 
 #include <LpwaV4.h>
@@ -39,14 +39,16 @@ LpwaAccess lpwaAccess;
 LpwaCtrl pmctrl;
 
 #ifdef STM32_DEEP_SLEEP
- // STM32 RTC 
- STM32RTC& rtc = STM32RTC::getInstance();
+// STM32 RTC
+STM32RTC &rtc = STM32RTC::getInstance();
 #endif
 
-void setup() {
+void setup()
+{
   Serial.begin(115200);
 #ifdef USBD_USE_CDC
-  while (!Serial) {
+  while (!Serial)
+  {
     ; // wait for serial port to connect. Needed for native USB port only
   }
 #endif //  USBD_USE_CDC
@@ -54,10 +56,14 @@ void setup() {
 
   // LPWAデバイスの初期化
   bool lpwa_enabled = false;
-  while (!lpwa_enabled) {
-    if (lpwaAccess.begin() == LPWA_READY) {
+  while (!lpwa_enabled)
+  {
+    if (lpwaAccess.begin() == LPWA_READY)
+    {
       lpwa_enabled = true;
-    } else {
+    }
+    else
+    {
       Serial.println("starting LPWA device.");
       delay(1000);
     }
@@ -70,14 +76,19 @@ void setup() {
 #endif
 }
 
-void loop() {
+void loop()
+{
   // LPWA接続開始
   Serial.println("connect PDN");
   bool pdn_connected = false;
-  while (!pdn_connected) {
-    if(gprs.attachGPRS(GPRS_APN, GPRS_LOGIN, GPRS_PASSWORD) == GPRS_READY) {
+  while (!pdn_connected)
+  {
+    if (gprs.attachGPRS(GPRS_APN, GPRS_LOGIN, GPRS_PASSWORD, gprs.LPWA_V4_GPRS_BAND_KDDI) == GPRS_READY)
+    {
       pdn_connected = true;
-    } else {
+    }
+    else
+    {
       Serial.println("connecting.");
       delay(1000);
     }
