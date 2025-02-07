@@ -44,11 +44,11 @@ NetworkStatus LpwaV4Gprs::attachGprs(const char *apn, const char *username,
   {
     if (!theMurataLpwaCore.sendf("AT%%SETCFG=\"BAND\",\"%02d\"\r", band))
       return theMurataLpwaCore.status = LPWA_FAIL;
-    if (theMurataLpwaCore.waitForResponse("OK\r", NULL, 0, 1000) < 0)
+    if (theMurataLpwaCore.waitForResponse("OK\r", NULL, 0, 30000) < 0)
       return theMurataLpwaCore.status = LPWA_FAIL;
     if (!theMurataLpwaCore.sendCmd("AT%GETCFG=\"BAND\"\r"))
       return theMurataLpwaCore.status = LPWA_FAIL;
-    if (theMurataLpwaCore.waitForResponse("OK\r", NULL, 0, 1000) < 0)
+    if (theMurataLpwaCore.waitForResponse("OK\r", NULL, 0, 30000) < 0)
       return theMurataLpwaCore.status = LPWA_FAIL;
   }
 
