@@ -15,7 +15,7 @@
 #include <Wire.h>
 #include "LpwaV4Borad.h"
 
-#define CMD_TIMEOUT_DEFAULT 2000
+#define CMD_TIMEOUT_DEFAULT 10000
 #define CMD_TIMEOUT_NETWORK 5000
 #define CMD_TIMEOUT_SHORT 1000
 #define CMD_TIMEOUT_POLL 500
