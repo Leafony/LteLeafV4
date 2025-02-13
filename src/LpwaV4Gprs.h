@@ -14,8 +14,7 @@
 /**
  * GPRS接続のためのクラス
  */
-class LpwaV4Gprs
-{
+class LpwaV4Gprs {
   bool _ready();
 
 public:
@@ -24,12 +23,16 @@ public:
   static const uint8_t LPWA_V4_GPRS_BAND_DOCOMO = 19;
 
   NetworkStatus attachGprs(const char *apn, const char *username,
-                           const char *password, const uint8_t band = LPWA_V4_GPRS_BAND_KDDI, unsigned long timeout = 10000);
+                           const char *password,
+                           const uint8_t band = LPWA_V4_GPRS_BAND_KDDI,
+                           unsigned long timeout = 10000,
+                           bool legacyMode = false);
   NetworkStatus attachGPRS(const char *apn, const char *username,
                            const char *password,
-                           const uint8_t band = LPWA_V4_GPRS_BAND_KDDI, unsigned long timeout = 10000)
-  {
-    return attachGprs(apn, username, password, band, timeout);
+                           const uint8_t band = LPWA_V4_GPRS_BAND_KDDI,
+                           unsigned long timeout = 10000,
+                           bool legacyMode = false) {
+    return attachGprs(apn, username, password, band, timeout, legacyMode);
   }
   NetworkStatus dettachGprs();
   IPAddress getIpAddress();
