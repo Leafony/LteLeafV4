@@ -1,0 +1,13 @@
+BasedOnStyle: LLVM
+IndentWidth: 2
+
+AllowShortIfStatementsOnASingleLine: true
+AllowShortLoopsOnASingleLine: true
+AllowShortBlocksOnASingleLine: true
+
+BraceWrapping:
+  AfterControlStatement: false
+  AfterFunction: false
+  AfterClass: false
+  AfterStruct: false
+  AfterUnion: false
