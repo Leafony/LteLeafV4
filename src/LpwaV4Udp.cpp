@@ -58,7 +58,7 @@ int LpwaV4Udp::_beginPacket()
   // ソケット接続
   if (!theMurataLpwaCore.sendf("AT%%SOCKETCMD=\"ACTIVATE\",%d\r", _socketId))
     return 0;
-  if (theMurataLpwaCore.waitForResponse("OK\r", NULL, 0, 5000) < 0)
+  if (theMurataLpwaCore.waitForResponse("OK\r", NULL, 0, CMD_TIMEOUT_NETWORK) < 0)
   {
     Serial.println("<error> UDP socket failed!");
     return 0;
