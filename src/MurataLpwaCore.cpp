@@ -197,19 +197,20 @@ void MurataLpwaCore::power(bool enable)
     // LTE-Mモデムの電源オン→ウェイクアップ
     Serial.println("<info> lpwa device power_up");
     writeTca6408(0x0, TCA6408_OUTPUT);                             // clear output register
+    writeTca6408(0x0,TCA6408_PULLUD_ENABLE);                       // All pull up/down disable
     writeTca6408(LTE_RST_STS | LTE_SC_SWP, TCA6408_CONFIGURATION); // input bit[7:6}
-    writeTca6408(LTE_PWR_ON | LTE_SHUTDOWNn, TCA6408_OUTPUT);      //
-    delay(1000);
+    writeTca6408(LTE_PWR_ON | LTE_WAKEUP, TCA6408_OUTPUT);      //
+    delay(10);
     writeTca6408(LTE_PWR_ON | LTE_SHUTDOWNn | LTE_WAKEUP, TCA6408_OUTPUT); // Write values to IO-expander
     _power = true;
   }
 
   if (_power && !enable)
   {
-    // LTE-Mモデムの電源オン→ウェイクアップ
+    // LTE-Mモデムの電源オフ
     Serial.println("<info> lpwa device power_down");
     writeTca6408(0x0, TCA6408_OUTPUT);                             // clear output register
-    writeTca6408(LTE_RST_STS | LTE_SC_SWP, TCA6408_CONFIGURATION); // input bit[7:6}
+    writeTca6408(0, TCA6408_CONFIGURATION);                        // set all port to output
     _power = false;
   }
 }
@@ -272,7 +273,10 @@ NetworkStatus MurataLpwaCore::begin()
   // GPIO初期化
   pinMode(MDM_USART_CTS, OUTPUT);
   digitalWrite(MDM_USART_CTS, LOW);
-  pinMode(MDM_USART_RTS, INPUT);
+  //pinMode(MDM_USART_RTS, INPUT);
+  //pinMode(MDM_USART_RXD, INPUT);
+  pinMode(MDM_USART_TXD, OUTPUT);
+  digitalWrite(MDM_USART_TXD, LOW);
 
   if (!_init)
   {
@@ -284,19 +288,19 @@ NetworkStatus MurataLpwaCore::begin()
     _init = true;
   }
 
-  // UART初期化
-  _serial.begin(_baud);
-
   // モデム電源オン
   power(true);
-  delay(100);
+  delay(1000);
+
+  // UART初期化
+  _serial.begin(_baud);
 
   // ダミーATコマンドでモデム死活チェック
   int remainChk = 10;
   while (remainChk > 0)
   {
     sendCmd("AT\r");
-    if (waitForResponse("OK\r", NULL, 0, 1000, true) == 0)
+    if (waitForResponse("OK\r", NULL, 0,CMD_TIMEOUT_DEFAULT,true) == 0)
     {
       remainChk = 0;
     }

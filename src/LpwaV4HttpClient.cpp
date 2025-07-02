@@ -125,7 +125,7 @@ int LpwaV4HttpClient::sendRequest(HttpRequestMethodV4 method, const char *path)
     }
     /** Use TLS **/
     theMurataLpwaCore.sendCmd("AT%HTTPCFG=\"TLS\",1,2,10\r");
-    if (theMurataLpwaCore.waitForResponse("OK\r", NULL, 0, 10000) < 0)
+    if (theMurataLpwaCore.waitForResponse("OK\r", NULL, 0, 30000) < 0)
     {
       _close();
       return _status = -1;

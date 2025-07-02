@@ -25,13 +25,13 @@ bool LpwaV4Gprs::_ready() { return true; }
 NetworkStatus LpwaV4Gprs::attachGprs(const char *apn, const char *username,
                                      const char *password, uint8_t band,
                                      unsigned long timeout, bool legacyMode) {
-  // Serial.println("@@@@@ LpwaV4Gprs::attachGprs() enter");
+//  Serial.println("@@@@@ LpwaV4Gprs::attachGprs() enter");
 
   const unsigned long start = millis();
 
   // disconnect PDN
   bool statCmd = theMurataLpwaCore.sendf("AT%%PDNACT=%d,1\r", 0);
-  int a = theMurataLpwaCore.waitForResponse("OK\r", NULL, 0, 3000, true);
+  int a = theMurataLpwaCore.waitForResponse("OK\r", NULL, 0,CMD_TIMEOUT_DEFAULT, true);
   statCmd = theMurataLpwaCore.sendCmd("at%PDNACT?\r");
   a = theMurataLpwaCore.waitForResponse("OK\r");
 
@@ -52,13 +52,17 @@ NetworkStatus LpwaV4Gprs::attachGprs(const char *apn, const char *username,
               "AT%%SETSYSCFG=\"SW_CFG.catm_band_table.band#1\",\"ENABLE;%d\"\r",
               band))
         return theMurataLpwaCore.status = LPWA_FAIL;
-      if (theMurataLpwaCore.waitForResponse("OK\r", NULL, 0, 30000) < 0)
+      if (theMurataLpwaCore.waitForResponse("OK\r", NULL, 0, 30000) < 0){
+        delay(10000);
         return theMurataLpwaCore.status = LPWA_FAIL;
+      }
       if (!theMurataLpwaCore.sendf(
               "AT%%GETSYSCFG=\"SW_CFG.catm_band_table.band#1\"\r"))
         return theMurataLpwaCore.status = LPWA_FAIL;
-      if (theMurataLpwaCore.waitForResponse("OK\r", NULL, 0, 30000) < 0)
+      if (theMurataLpwaCore.waitForResponse("OK\r", NULL, 0, 30000) < 0){
+        delay(10000);
         return theMurataLpwaCore.status = LPWA_FAIL;
+      }
     }
   }
 
@@ -66,8 +70,10 @@ NetworkStatus LpwaV4Gprs::attachGprs(const char *apn, const char *username,
   if (!theMurataLpwaCore.sendf("AT%%PDNSET=1,%s,IP,CHAP,%s,%s,,0,0,0\r", apn,
                                username, password))
     return theMurataLpwaCore.status = LPWA_FAIL;
-  if (theMurataLpwaCore.waitForResponse("OK\r") < 0)
+  if (theMurataLpwaCore.waitForResponse("OK\r") < 0){
+    delay(10000);
     return theMurataLpwaCore.status = LPWA_FAIL;
+  }
 
   // PDP設定後はコマンドを受け付けないため待機
   delay(timeout);
@@ -75,6 +81,7 @@ NetworkStatus LpwaV4Gprs::attachGprs(const char *apn, const char *username,
   // check PDP connection
   if (!theMurataLpwaCore.sendCmd("at%PDNACT?\r"))
     return theMurataLpwaCore.status = LPWA_FAIL;
+   
   if (theMurataLpwaCore.waitForResponse("OK\r") < 0) { delay(1000); }
 
   // PDP connect
@@ -83,18 +90,18 @@ NetworkStatus LpwaV4Gprs::attachGprs(const char *apn, const char *username,
     cntWait--;
     if (cntWait < 1) {
       Serial.println("@@@@@ LpwaV4Gprs::attachGprs() PDN timeout");
-      return theMurataLpwaCore.status = LPWA_FAIL;
+      return theMurataLpwaCore.status = LPWA_ABORT;
     }
 
     if (!theMurataLpwaCore.sendf("AT%%PDNACT=%d,1,%s\r", 1, apn))
-      return theMurataLpwaCore.status = LPWA_FAIL;
+          return theMurataLpwaCore.status = LPWA_ABORT;
     if (theMurataLpwaCore.waitForResponse("OK\r") < 0) {
       delay(5000);
       continue;
     }
 
     if (!theMurataLpwaCore.sendCmd("at%PDNACT?\r"))
-      return theMurataLpwaCore.status = LPWA_FAIL;
+      return theMurataLpwaCore.status = LPWA_ABORT;
     if (theMurataLpwaCore.waitForResponse("OK\r") < 0) {
       delay(1000);
       continue;
