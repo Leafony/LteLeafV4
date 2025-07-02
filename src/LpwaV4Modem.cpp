@@ -133,7 +133,7 @@ String LpwaV4Modem::getIccid()
   {
     if (!theMurataLpwaCore.sendCmd("AT%CCID\r"))
       return "";
-    if (theMurataLpwaCore.waitForResponse("OK\r", rcvbuff, 100, 3000, true) >= 0)
+    if (theMurataLpwaCore.waitForResponse("OK\r", rcvbuff, 100,CMD_TIMEOUT_DEFAULT, true) >= 0)
     {
       start_p = strstr(rcvbuff, "%CCID: ");
       if (start_p != NULL)

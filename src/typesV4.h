@@ -21,7 +21,9 @@ enum NetworkStatus
   /** GPRS接続の準備完了 */
   GPRS_READY,
   /** LPWAモジュールの電源オフ */
-  LPWA_OFF
+  LPWA_OFF,
+  /** LPWAモジュール処理の中断 */
+  LPWA_ABORT
 };
 
 #endif
